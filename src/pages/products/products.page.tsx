@@ -4,57 +4,73 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { LoadingComponent } from "../../components";
+import { getProducts } from "../../services/product.service";
 
 const ProductsPage = () => {
 
-    const [products, setProducts] = useState<CompanyModel[] | null>(null);
+    const [products, setProducts] = useState<ProductModel[] | null>(null);
     const [openModal, setOpenModal] = useState<boolean>(false);
 
-    const {accessToken, role} = useSelector((state: RootState) => state.auth.authData);
+    const { accessToken, role } = useSelector((state: RootState) => state.auth.authData);
 
     const loadInitData = async () => {
-        console.log(accessToken, role)
-        setProducts([]);
+        const { data, error } = await getProducts(accessToken);
+        
+        if(data){
+            setProducts(data);
+        }
+
+        if(error){
+            console.log(error);
+        }
     }
 
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
 
-    useEffect( () => {
+    useEffect(() => {
         loadInitData().catch(console.log);
-    },[]);
+    }, []);
+    
     if (products == null) {
         return <LoadingComponent />
     }
 
-    return(
+    return (
         <Box sx={{ padding: '2rem' }}>
-            <h2>Empresas</h2>
+            <h2>Productos</h2>
 
             <div className="d-flex justify-content-end">
-                <button type="button" className="btn btn-primary" onClick={handleOpenModal}>
-                    <AddIcon /> Agregar
-                </button>
+                {
+                    role == 'ADMIN' &&
+                    <button type="button" className="btn btn-primary" onClick={handleOpenModal}>
+                        <AddIcon /> Agregar
+                    </button>
+                }
             </div>
 
             <table className="table table-striped mt-5">
                 <thead className="thead-dark">
                     <tr>
-                        <th scope="col">NIT</th>
+                        <th scope="col">Código</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Direccion</th>
-                        <th scope="col">Telefono</th>
+                        <th scope="col">Características</th>
+                        <th scope="col">Precio en varias monedas.</th>
+                        <th scope="col">Empresa</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        products.map((c) => {
+                        products.map((p) => {
                             return (
-                                <tr key={c.nit}>
-                                    <td scope="row">{c.nit}</td>
-                                    <td>{c.name}</td>
-                                    <td>{c.address}</td>
-                                    <td>{c.phone}</td>
+                                <tr key={p.code}>
+                                    <td scope="row">{p.code}</td>
+                                    <td>{p.name}</td>
+                                    <td>{p.characteristics}</td>
+                                    <td>
+                                        {p.price.join("-")}
+                                    </td>
+                                    <td>{p.companyName}</td>
                                 </tr>
                             );
                         })
@@ -69,7 +85,7 @@ const ProductsPage = () => {
                 <Box>
                     <h3>Hola</h3>
                 </Box>
-                
+
             </Modal>
         </Box>
     );
