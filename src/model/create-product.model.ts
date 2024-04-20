@@ -1,7 +1,6 @@
-interface ProductModel{
-    code: string;
+interface CreateProductModel{
     name: string;
     characteristics: string;
     prices: string;
-    companyName: string;
+    companyNit: string;
 }

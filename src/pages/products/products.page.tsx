@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { LoadingComponent } from "../../components";
 import { getProducts } from "../../services/product.service";
+import AddProductModal from "../../components/add-product-modal.component";
 
 const ProductsPage = () => {
 
@@ -23,6 +24,12 @@ const ProductsPage = () => {
         if(error){
             console.log(error);
         }
+    }
+
+    const handleOnSuccesCreate = async () => {
+        setOpenModal(false);
+        setProducts(null);
+        await loadInitData();
     }
 
     const handleOpenModal = () => setOpenModal(true);
@@ -68,7 +75,7 @@ const ProductsPage = () => {
                                     <td>{p.name}</td>
                                     <td>{p.characteristics}</td>
                                     <td>
-                                        {p.price.join("-")}
+                                        {p.prices}
                                     </td>
                                     <td>{p.companyName}</td>
                                 </tr>
@@ -83,7 +90,7 @@ const ProductsPage = () => {
                 onClose={handleCloseModal}
             >
                 <Box>
-                    <h3>Hola</h3>
+                    <AddProductModal onSuccess={handleOnSuccesCreate}/>
                 </Box>
 
             </Modal>

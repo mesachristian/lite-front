@@ -19,6 +19,23 @@ export const getCompanies = async(accessToken: string) => {
     };
 }
 
+export const getCompaniesWithProducts = async(accessToken: string) => {
+    const config = {
+        url: `${apiServerUrl}/get-all`,
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data || null,
+        error,
+    };
+}
+
 export const addCompany = async(accessToken: string, body: CompanyModel) => {
     const config = {
         url: `${apiServerUrl}/create`,

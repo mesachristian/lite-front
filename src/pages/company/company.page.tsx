@@ -15,7 +15,7 @@ const CompanyPage = () => {
 
     const [openModal, setOpenModal] = useState<boolean>(false);
 
-    const { accessToken } = useSelector((state: RootState) => state.auth.authData);
+    const { accessToken, role } = useSelector((state: RootState) => state.auth.authData);
 
     const handleOpenModal = () => {
         setPickedCompany(null);
@@ -29,24 +29,24 @@ const CompanyPage = () => {
         await loadInitData();
     }
 
-    const handleDeleteCompany = async(nit: string) => {
+    const handleDeleteCompany = async (nit: string) => {
         const { error } = await deleteCompany(accessToken, nit);
 
-        if(error == null){
+        if (error == null) {
             await loadInitData();
         }
     }
 
-    const handleEditCompany = async(c: CompanyModel) => {
+    const handleEditCompany = async (c: CompanyModel) => {
         setPickedCompany(c);
         setOpenModal(true);
     }
 
     const loadInitData = async () => {
-        const { data, error} = await getCompanies(accessToken);
-        if(data){
-            setCompanies(data);    
-        }else{
+        const { data, error } = await getCompanies(accessToken);
+        if (data) {
+            setCompanies(data);
+        } else {
             console.log(error);
         }
     }
@@ -64,9 +64,12 @@ const CompanyPage = () => {
             <h2>Empresas</h2>
 
             <div className="d-flex justify-content-end">
-                <button type="button" className="btn btn-primary" onClick={handleOpenModal}>
-                    <AddIcon /> Agregar
-                </button>
+                {
+                    role == 'ADMIN' &&
+                    <button type="button" className="btn btn-primary" onClick={handleOpenModal}>
+                        <AddIcon /> Agregar
+                    </button>
+                }
             </div>
 
             <table className="table table-striped mt-5">
@@ -89,16 +92,16 @@ const CompanyPage = () => {
                                     <td>{c.address}</td>
                                     <td>{c.phone}</td>
                                     <td>
-                                        <button 
+                                        <button
                                             onClick={() => handleEditCompany(c)}
-                                            type="button" 
-                                            className="btn btn-info" 
+                                            type="button"
+                                            className="btn btn-info"
                                             style={{ fontSize: 17, marginRight: 7, color: '#f8f8f8' }}
-                                            >
-                                            <ModeEditRoundedIcon fontSize="inherit" color="inherit"/>
+                                        >
+                                            <ModeEditRoundedIcon fontSize="inherit" color="inherit" />
                                         </button>
                                         <button type="button" className="btn btn-danger" style={{ fontSize: 17 }} onClick={() => handleDeleteCompany(c.nit)}>
-                                            <DeleteRoundedIcon fontSize="inherit"/>
+                                            <DeleteRoundedIcon fontSize="inherit" />
                                         </button>
                                     </td>
                                 </tr>
@@ -113,9 +116,9 @@ const CompanyPage = () => {
                 onClose={handleCloseModal}
             >
                 <Box>
-                    <AddCompanyModal companyInfo={pickedCompany} onSuccess={handleOnSuccesCreate}/>
+                    <AddCompanyModal companyInfo={pickedCompany} onSuccess={handleOnSuccesCreate} />
                 </Box>
-                
+
             </Modal>
         </Box>
     );
